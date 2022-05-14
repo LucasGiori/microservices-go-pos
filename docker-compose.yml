@@ -1,0 +1,186 @@
+version: '3.6'
+services:
+  customer:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    container_name: customer
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./customer:/app
+    links:
+      - postgres-customer
+    depends_on:
+      - postgres-customer
+    networks:
+      - customer
+
+
+  postgres-customer:
+    image: postgres:14-alpine
+    container_name: postgres-customer
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: customer
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./customer/configs/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - customer
+
+  order:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    container_name: order
+    ports:
+      - "8084:8084"
+    volumes:
+      - ./order:/app
+    links:
+      - rabbitmq
+      - postgres-order
+    depends_on:
+      - rabbitmq
+      - postgres-order
+    networks:
+      - rabbitmq
+      - order
+
+  postgres-order:
+    image: postgres:14-alpine
+    container_name: postgres-order
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_DB: order
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./order/configs/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - order
+
+  rabbitmq:
+    image: rabbitmq:3.9-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  order-aggregator:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    container_name: order-aggregator
+    volumes:
+      - ./order-aggregator:/app
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+    networks:
+      - rabbitmq
+      - general
+
+  order-receiver:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    container_name: order-receiver
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./order-receiver:/app
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+    networks:
+      - rabbitmq
+      - general
+
+  product:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    container_name: product
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./product:/app
+    depends_on:
+      - postgres-product
+    networks:
+      - product
+
+  postgres-product:
+    image: postgres:14-alpine
+    container_name: postgres-product
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: product
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./product/configs/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - product
+
+  user:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    container_name: user
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./user:/app
+    depends_on:
+      - postgres-user
+    networks:
+      - user
+
+  postgres-user:
+    image: postgres:14-alpine
+    container_name: postgres-user
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: user
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./user/configs/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - user
+
+networks:
+  customer:
+    driver: bridge
+  order:
+    driver: bridge
+  product:
+    driver: bridge
+  user:
+    driver: bridge
+  rabbitmq:
+    driver: bridge
+  general:
+    driver: bridge
+  
