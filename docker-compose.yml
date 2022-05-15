@@ -92,6 +92,8 @@ services:
       - rabbitmq
     networks:
       - rabbitmq
+      - customer
+      - product
       - general
 
   order-receiver:
