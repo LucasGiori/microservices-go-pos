@@ -172,6 +172,40 @@ services:
     networks:
       - user
 
+  ticket-process:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    container_name: ticket-process
+    ports:
+      - "8097:8097"
+    volumes:
+      - ./ticket-process:/app
+    links:
+      - rabbitmq
+      - postgres-ticket-process
+    depends_on:
+      - rabbitmq
+      - postgres-ticket-process
+    networks:
+      - ticket-process
+      - rabbitmq
+
+  postgres-ticket-process:
+    image: postgres:14-alpine
+    container_name: postgres-ticket-process
+    ports:
+      - "5437:5432"
+    environment:
+      POSTGRES_DB: ticket-process
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./ticket-process/configs/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ticket-process
+
 networks:
   customer:
     driver: bridge
@@ -182,6 +216,8 @@ networks:
   user:
     driver: bridge
   rabbitmq:
+    driver: bridge
+  ticket-process:
     driver: bridge
   general:
     driver: bridge
