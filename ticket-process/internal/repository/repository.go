@@ -8,11 +8,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
 	"gitlab.com/pos-alfa-microservices-go/core/database"
+	// "fmt"
 )
 
 type Repository interface {
 	Create(context.Context, *model.Ticket) (*model.Ticket, error)
 	FindById(context.Context, string) (*model.Ticket, error)
+	Update(context.Context, *model.Ticket) (*model.Ticket, error)
 }
 
 type RepositoryImpl struct {
@@ -62,4 +64,20 @@ func (r RepositoryImpl) FindById(ctx context.Context, ticketId string) (*model.T
 		Email:       email,
 		Status:      status,
 	}, nil
+}
+
+func (r RepositoryImpl) Update(ctx context.Context, ticket *model.Ticket) (*model.Ticket, error) {
+
+	sql := "update ticket set id = $1, order_id = $2, description = $3, email = $4, status = $5 where id = $1"
+	
+	
+	var id uuid.UUID
+	err := r.databaseManager.Exec(ctx, sql,
+		ticket.Id, ticket.OrderId, ticket.Description, ticket.Email, ticket.Status).Scan(&id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ticket, nil
 }

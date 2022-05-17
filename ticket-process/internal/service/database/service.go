@@ -13,6 +13,7 @@ import (
 type ServiceDatabase interface {
 	FindById(context.Context, string) (*model.Ticket, error)
 	Create(context.Context, *model.Ticket) (*model.Ticket, error)
+	Update(context.Context, *model.Ticket) (*model.Ticket, error)
 }
 
 type ServiceImplDatabase struct {
@@ -35,4 +36,8 @@ func (r ServiceImplDatabase) FindById(ctx context.Context, ticketId string) (*mo
 
 func (r ServiceImplDatabase) Create(ctx context.Context, ticket *model.Ticket) (*model.Ticket, error) {
 	return r.repository.Create(ctx, ticket)
+}
+
+func (r ServiceImplDatabase) Update(ctx context.Context, ticket *model.Ticket) (*model.Ticket, error) {
+	return r.repository.Update(ctx, ticket)
 }

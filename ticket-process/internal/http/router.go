@@ -31,6 +31,7 @@ func (r *ServerRouter) Create() *echo.Echo {
 	ticket := e.Group("/ticket")
 	ticket.POST("", handler.Create, jwtMiddleware)
 	ticket.GET("/:id", handler.GetById, jwtMiddleware)
+	ticket.PUT("/:id", handler.Update, jwtMiddleware)
 
 	return e
 }
