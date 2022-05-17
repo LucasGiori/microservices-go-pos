@@ -2,18 +2,20 @@ package container
 
 import (
 	"microservices/ticket-process/internal/repository"
-	service "microservices/ticket-process/internal/service/message"
+
+	databaseService "microservices/ticket-process/internal/service/message"
+	message "microservices/ticket-process/internal/service/message"
 
 	"gitlab.com/pos-alfa-microservices-go/core/broker/rabbitmq"
+	"gitlab.com/pos-alfa-microservices-go/core/database"
 
 	"gitlab.com/pos-alfa-microservices-go/core/config"
-	"gitlab.com/pos-alfa-microservices-go/core/database"
 )
 
 type Container struct {
 	AppConfig *config.AppConfig
 
-	MessageService service.MessageService
+	Service message.Service
 }
 
 func NewContainer(appConfig *config.AppConfig) *Container {
@@ -30,7 +32,7 @@ func (c *Container) Start() error {
 
 	databaseManager := database.NewDatabaseManagerImpl(pool)
 	repository := repository.NewRepositoryImpl(databaseManager)
-	c.MessageService = service.NewServiceImpl(repository)
+	c.Service = databaseService.NewServiceImpl(repository)
 
 	rabbitClient, err := rabbitmq.StartRabbitClient(c.AppConfig)
 	if err != nil {
@@ -38,7 +40,7 @@ func (c *Container) Start() error {
 	}
 
 	messagePublisher := rabbitmq.NewRabbitPublisher(rabbitClient)
-	c.MessageService = service.NewServiceImpl(messagePublisher)
+	c.Service = message.NewServiceImpl(messagePublisher)
 
 	return nil
 }

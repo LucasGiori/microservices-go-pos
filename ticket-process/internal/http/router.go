@@ -28,7 +28,7 @@ func (r *ServerRouter) Create() *echo.Echo {
 
 	e.GET("/health", healhCheck.Check)
 
-	models := e.Group("/orders")
+	models := e.Group("/ticket")
 	models.POST("", handler.Create, jwtMiddleware)
 
 	return e

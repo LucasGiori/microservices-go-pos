@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type MessageService interface {
+type Service interface {
 	Create(context.Context, *model.Ticket) (*model.Ticket, error)
 }
 
@@ -19,7 +19,7 @@ type ServiceImpl struct {
 	messagePublisher rabbitmq.MessagePublisher
 }
 
-func NewServiceImpl(messagePublisher rabbitmq.MessagePublisher) MessageService {
+func NewServiceImpl(messagePublisher rabbitmq.MessagePublisher) Service {
 	return &ServiceImpl{
 		messagePublisher: messagePublisher,
 	}

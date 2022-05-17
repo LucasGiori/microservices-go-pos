@@ -18,7 +18,7 @@ type Ticket struct {
 	Id          uuid.UUID
 	OrderId     uuid.UUID
 	Description string
-	email       string
+	Email       string
 	Status      TicketStatus `json:",omitempty"`
 	DateTime    time.Time    `json:",omitempty"`
 }

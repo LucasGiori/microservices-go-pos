@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	"microservices/ticket-process/internal/service"
+	service "microservices/ticket-process/internal/service/message"
 	"microservices/ticket-process/pkg/model"
 	"net/http"
 
@@ -14,17 +14,17 @@ type Handler interface {
 }
 
 type HandlerImpl struct {
-	service service.MessageService
+	service service.Service
 }
 
-func NewHandlerImpl(service service.MessageService) Handler {
+func NewHandlerImpl(service service.Service) Handler {
 	return &HandlerImpl{
 		service: service,
 	}
 }
 
 func (h HandlerImpl) Create(c echo.Context) error {
-	request := model.Order{}
+	request := model.Ticket{}
 	if err := c.Bind(&request); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
