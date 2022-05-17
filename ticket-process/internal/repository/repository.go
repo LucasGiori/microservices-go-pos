@@ -69,11 +69,9 @@ func (r RepositoryImpl) FindById(ctx context.Context, ticketId string) (*model.T
 func (r RepositoryImpl) Update(ctx context.Context, ticket *model.Ticket) (*model.Ticket, error) {
 
 	sql := "update ticket set id = $1, order_id = $2, description = $3, email = $4, status = $5 where id = $1"
-	
-	
-	var id uuid.UUID
-	err := r.databaseManager.Exec(ctx, sql,
-		ticket.Id, ticket.OrderId, ticket.Description, ticket.Email, ticket.Status).Scan(&id)
+
+	_, err := r.databaseManager.Exec(ctx, sql,
+		ticket.Id, ticket.OrderId, ticket.Description, ticket.Email, ticket.Status)
 
 	if err != nil {
 		return nil, err
