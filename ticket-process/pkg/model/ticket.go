@@ -9,9 +9,9 @@ import (
 type TicketStatus string
 
 const (
-	OPENED      TicketStatus = "OPENED"
-	IN_PROGRESS              = "IN_PROGRESS"
-	CLOSED                   = "CLOSED"
+	OPENED TicketStatus = "OPENED"
+	IN_PROGRESS TicketStatus = "IN_PROGRESS"
+	CLOSED TicketStatus = "CLOSED"
 )
 
 type Ticket struct {

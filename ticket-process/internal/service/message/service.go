@@ -11,21 +11,21 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Service interface {
+type ServiceMessage interface {
 	Create(context.Context, *model.Ticket) (*model.Ticket, error)
 }
 
-type ServiceImpl struct {
+type ServiceImplMessage struct {
 	messagePublisher rabbitmq.MessagePublisher
 }
 
-func NewServiceImpl(messagePublisher rabbitmq.MessagePublisher) Service {
-	return &ServiceImpl{
+func NewServiceImpl(messagePublisher rabbitmq.MessagePublisher) ServiceMessage {
+	return &ServiceImplMessage{
 		messagePublisher: messagePublisher,
 	}
 }
 
-func (s ServiceImpl) Create(ctx context.Context, ticket *model.Ticket) (*model.Ticket, error) {
+func (s ServiceImplMessage) Create(ctx context.Context, ticket *model.Ticket) (*model.Ticket, error) {
 
 	if err := s.messagePublisher.Publish("notification", ticket); err != nil {
 		return nil, errors.Wrap(err, "fail to publish order")

@@ -4,28 +4,28 @@ import (
 	"context"
 	"microservices/ticket-process/internal/repository"
 
-	"github.com/google/uuid"
+	// "github.com/google/uuid"
 	customErrors "gitlab.com/pos-alfa-microservices-go/core/errors"
 
 	"microservices/ticket-process/pkg/model"
 )
 
-type Service interface {
-	FindById(context.Context, uuid.UUID) (*model.Ticket, error)
+type ServiceDatabase interface {
+	FindById(context.Context, string) (*model.Ticket, error)
 	Create(context.Context, *model.Ticket) (*model.Ticket, error)
 }
 
-type ServiceImpl struct {
+type ServiceImplDatabase struct {
 	repository repository.Repository
 }
 
-func NewServiceImpl(repository repository.Repository) Service {
-	return &ServiceImpl{
+func NewServiceImpl(repository repository.Repository) ServiceDatabase {
+	return &ServiceImplDatabase{
 		repository: repository,
 	}
 }
 
-func (r ServiceImpl) FindById(ctx context.Context, ticketId uuid.UUID) (*model.Ticket, error) {
+func (r ServiceImplDatabase) FindById(ctx context.Context, ticketId string) (*model.Ticket, error) {
 	if ticketId == "" {
 		return nil, customErrors.ErrEmptyIdParam
 	}
@@ -33,6 +33,6 @@ func (r ServiceImpl) FindById(ctx context.Context, ticketId uuid.UUID) (*model.T
 	return r.repository.FindById(ctx, ticketId)
 }
 
-func (r ServiceImpl) Create(ctx context.Context, ticket *model.Ticket) (*model.Ticket, error) {
+func (r ServiceImplDatabase) Create(ctx context.Context, ticket *model.Ticket) (*model.Ticket, error) {
 	return r.repository.Create(ctx, ticket)
 }

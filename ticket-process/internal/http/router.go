@@ -23,13 +23,14 @@ func (r *ServerRouter) Create() *echo.Echo {
 	e := server.NewCoreEcho()
 
 	jwtMiddleware := server.ValidateJWTMiddleware(r.container.AppConfig)
-	handler := handler.NewHandlerImpl(r.container.Service)
+	handler := handler.NewHandlerImpl(r.container.ServiceImplDatabase)
 	healhCheck := server.NewDefautlHealhCheck()
 
 	e.GET("/health", healhCheck.Check)
 
-	models := e.Group("/ticket")
-	models.POST("", handler.Create, jwtMiddleware)
+	ticket := e.Group("/ticket")
+	ticket.POST("", handler.Create, jwtMiddleware)
+	ticket.GET("/:id", handler.GetById, jwtMiddleware)
 
 	return e
 }

@@ -12,7 +12,7 @@ import (
 
 type Repository interface {
 	Create(context.Context, *model.Ticket) (*model.Ticket, error)
-	FindById(context.Context, uuid.UUID) (*model.Ticket, error)
+	FindById(context.Context, string) (*model.Ticket, error)
 }
 
 type RepositoryImpl struct {
@@ -37,14 +37,14 @@ func (r RepositoryImpl) Create(ctx context.Context, ticket *model.Ticket) (*mode
 	return ticket, nil
 }
 
-func (r RepositoryImpl) FindById(ctx context.Context, ticketId uuid.UUID) (*model.Ticket, error) {
+func (r RepositoryImpl) FindById(ctx context.Context, ticketId string) (*model.Ticket, error) {
 	sql := "select t.id, t.order_id, t.description, t.email, t.status from ticket t where t.id = $1"
 
 	var id uuid.UUID
 	var order_id uuid.UUID
 	var description string
 	var email string
-	var status string
+	var status model.TicketStatus
 
 	err := r.databaseManager.QueryRow(ctx, sql, ticketId).Scan(&id, &order_id, &description, &email, &status)
 	if err != nil {
