@@ -1,5 +1,36 @@
 version: '3.6'
 services:
+  customer-service-onboarding:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    container_name: customer-service-onboarding
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./customer-service-onboarding:/app
+    links:
+      - postgres-customer-service-onboarding
+    depends_on:
+      - postgres-customer-service-onboarding
+    networks:
+      - customer-service-onboarding
+
+  postgres-customer-service-onboarding:
+    image: postgres:14-alpine
+    container_name: postgres-customer-service-onboarding
+    ports:
+      - "5439:5432"
+    environment:
+      POSTGRES_DB: customer-service-onboarding
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./customer-service-onboarding/configs/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - customer-service-onboarding
+
   customer:
     build: 
       dockerfile: Dockerfile
@@ -171,8 +202,27 @@ services:
       - ./user/configs/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - user
+  
+  ticket-create:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    container_name: ticket-create
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./ticket-create:/app
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+    networks:
+      - rabbitmq
 
 networks:
+  customer-service-onboarding:
+    driver: bridge
   customer:
     driver: bridge
   order:
@@ -180,6 +230,8 @@ networks:
   product:
     driver: bridge
   user:
+    driver: bridge
+  ticket-creare:
     driver: bridge
   rabbitmq:
     driver: bridge
