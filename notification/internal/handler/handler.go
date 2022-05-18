@@ -2,8 +2,8 @@ package handler
 
 import (
 	"context"
-	"microservices/customer-service-onboarding/internal/service"
-	"microservices/customer-service-onboarding/pkg/model"
+	"microservices/notification/internal/service"
+	"microservices/notification/pkg/model"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
