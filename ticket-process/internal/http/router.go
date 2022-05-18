@@ -23,7 +23,7 @@ func (r *ServerRouter) Create() *echo.Echo {
 	e := server.NewCoreEcho()
 
 	jwtMiddleware := server.ValidateJWTMiddleware(r.container.AppConfig)
-	handler := handler.NewHandlerImpl(r.container.ServiceImplDatabase)
+	handler := handler.NewHandlerImpl(r.container.ServiceImplDatabase, r.container.ServiceImplMessage)
 	healhCheck := server.NewDefautlHealhCheck()
 
 	e.GET("/health", healhCheck.Check)

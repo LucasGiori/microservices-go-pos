@@ -2,8 +2,8 @@ package handler
 
 import (
 	"context"
-	// service "microservices/ticket-process/internal/service/message" // ver para chamar database ao invés de message
 	service "microservices/ticket-process/internal/service/database"
+	message "microservices/ticket-process/internal/service/message"
 	"microservices/ticket-process/pkg/model"
 	"net/http"
 
@@ -18,11 +18,13 @@ type Handler interface {
 
 type HandlerImpl struct {
 	service service.ServiceDatabase
+	message message.ServiceMessage
 }
 
-func NewHandlerImpl(service service.ServiceDatabase) Handler {
+func NewHandlerImpl(service service.ServiceDatabase, message message.ServiceMessage) Handler {
 	return &HandlerImpl{
 		service: service,
+		message: message,
 	}
 }
 
@@ -36,6 +38,8 @@ func (h HandlerImpl) Create(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
+	h.message.Create(context.Background(), model)
 
 	return c.JSON(http.StatusAccepted, model)
 }
@@ -60,6 +64,8 @@ func (h HandlerImpl) Update(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
+	h.message.Create(context.Background(), model)
 
 	return c.JSON(http.StatusAccepted, model)
 }
