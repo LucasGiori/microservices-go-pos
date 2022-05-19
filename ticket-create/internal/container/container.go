@@ -1,7 +1,7 @@
 package container
 
 import (
-	"microservices/ticket-create/internal/service"
+	message "microservices/ticket-create/internal/service"
 
 	"gitlab.com/pos-alfa-microservices-go/core/broker/rabbitmq"
 
@@ -11,7 +11,7 @@ import (
 type Container struct {
 	AppConfig *config.AppConfig
 
-	Service service.Service
+	ServiceImplMessage message.ServiceMessage
 }
 
 func NewContainer(appConfig *config.AppConfig) *Container {
@@ -21,13 +21,14 @@ func NewContainer(appConfig *config.AppConfig) *Container {
 }
 
 func (c *Container) Start() error {
+
 	rabbitClient, err := rabbitmq.StartRabbitClient(c.AppConfig)
 	if err != nil {
 		return err
 	}
 
 	messagePublisher := rabbitmq.NewRabbitPublisher(rabbitClient)
-	c.Service = service.NewServiceImpl(messagePublisher)
+	c.ServiceImplMessage = message.NewServiceImpl(messagePublisher)
 
 	return nil
 }

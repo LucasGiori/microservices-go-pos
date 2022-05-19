@@ -14,10 +14,10 @@ type Handler interface {
 }
 
 type HandlerImpl struct {
-	service service.Service
+	service service.ServiceMessage
 }
 
-func NewHandlerImpl(service service.Service) Handler {
+func NewHandlerImpl(service service.ServiceMessage) Handler {
 	return &HandlerImpl{
 		service: service,
 	}

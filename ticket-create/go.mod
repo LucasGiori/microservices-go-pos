@@ -7,7 +7,7 @@ go 1.17
 require (
 	github.com/google/uuid v1.3.0
 	github.com/labstack/echo/v4 v4.6.3
-	github.com/shopspring/decimal v1.3.1
+	github.com/pkg/errors v0.8.1
 	gitlab.com/pos-alfa-microservices-go/core v0.1.4
 )
 
@@ -30,7 +30,6 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

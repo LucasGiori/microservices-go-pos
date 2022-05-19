@@ -1,8 +1,8 @@
 package main
 
 import (
-	"microservices/order-receiver/internal/container"
-	"microservices/order-receiver/internal/http"
+	"microservices/ticket-create/internal/container"
+	"microservices/ticket-create/internal/http"
 
 	"gitlab.com/pos-alfa-microservices-go/core/config"
 	"gitlab.com/pos-alfa-microservices-go/core/http/server"
