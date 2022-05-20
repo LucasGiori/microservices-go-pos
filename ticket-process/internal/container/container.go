@@ -3,6 +3,9 @@ package container
 import (
 	"microservices/ticket-process/internal/repository"
 
+	"github.com/pkg/errors"
+
+	consumer "microservices/ticket-process/internal/message"
 	databaseService "microservices/ticket-process/internal/service/database"
 	message "microservices/ticket-process/internal/service/message"
 
@@ -15,7 +18,7 @@ import (
 type Container struct {
 	AppConfig *config.AppConfig
 
-	ServiceImplMessage message.ServiceMessage
+	ServiceImplMessage  message.ServiceMessage
 	ServiceImplDatabase databaseService.ServiceDatabase
 }
 
@@ -46,6 +49,14 @@ func (c *Container) Start() error {
 
 	messagePublisher := rabbitmq.NewRabbitPublisher(rabbitClient)
 	c.ServiceImplMessage = message.NewServiceImpl(messagePublisher)
+
+	receivedQueueName := "ticket-pending"
+
+	ticketsProcessor := consumer.NewMessageTicketProcessor(receivedQueueName, rabbitClient, c.ServiceImplDatabase, c.ServiceImplMessage)
+	if err := ticketsProcessor.StartConsume(); err != nil {
+		return errors.Wrap(err, "fail on start consume for "+receivedQueueName)
+	}
+	//NewMessageOrderProcessor(receivedQueueName, rabbitClient, c.ProcessOrder)
 
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"microservices/ticket-process/pkg/model"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
@@ -40,15 +41,16 @@ func (r RepositoryImpl) Create(ctx context.Context, ticket *model.Ticket) (*mode
 }
 
 func (r RepositoryImpl) FindById(ctx context.Context, ticketId string) (*model.Ticket, error) {
-	sql := "select t.id, t.order_id, t.description, t.email, t.status from ticket t where t.id = $1"
+	sql := "select t.id, t.order_id, t.description, t.email, t.status, t.date_time from ticket t where t.id = $1"
 
 	var id uuid.UUID
 	var order_id uuid.UUID
 	var description string
 	var email string
 	var status model.TicketStatus
+	var date_time time.Time
 
-	err := r.databaseManager.QueryRow(ctx, sql, ticketId).Scan(&id, &order_id, &description, &email, &status)
+	err := r.databaseManager.QueryRow(ctx, sql, ticketId).Scan(&id, &order_id, &description, &email, &status, &date_time)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
@@ -63,6 +65,7 @@ func (r RepositoryImpl) FindById(ctx context.Context, ticketId string) (*model.T
 		Description: description,
 		Email:       email,
 		Status:      status,
+		DateTime:    date_time,
 	}, nil
 }
 
