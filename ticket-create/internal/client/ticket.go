@@ -25,7 +25,7 @@ func NewHttpticketClient(httpClient client.HttpClient, url string) TicketClient 
 }
 
 func (c HttpticketClient) GetById(ctx context.Context, id string) (*model.Ticket, error) {
-	body, err := c.httpClient.Get(ctx, c.url+"/"+id)
+	body, err := c.httpClient.Get(ctx, c.url + id)
 	if err != nil {
 		return nil, err
 	}
