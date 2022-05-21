@@ -46,18 +46,28 @@ func (h HandlerImpl) Create(c echo.Context) error {
 
 func (h HandlerImpl) GetById(c echo.Context) error {
 	id := c.Param("id")
-	product, err := h.service.FindById(context.Background(), id)
+	ticket, err := h.service.FindById(context.Background(), id)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusNotFound, &model.Response{
+			Message: "Ticket not found",
+		})
 	}
 
-	return c.JSON(http.StatusOK, product)
+	return c.JSON(http.StatusOK, ticket)
 }
 
 func (h HandlerImpl) Update(c echo.Context) error {
+	id := c.Param("id")
 	request := model.Ticket{}
 	if err := c.Bind(&request); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	ticket, _ := h.service.FindById(context.Background(), id)
+	if ticket == nil {
+		return c.JSON(http.StatusNotFound, &model.Response{
+			Message: "Ticket not found",
+		})
 	}
 
 	model, err := h.service.Update(context.Background(), &request)
