@@ -1,36 +1,5 @@
 version: '3.6'
 services:
-  customer-service-onboarding:
-    build: 
-      dockerfile: Dockerfile
-      context: .
-      target: dev
-    container_name: customer-service-onboarding
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./customer-service-onboarding:/app
-    links:
-      - postgres-customer-service-onboarding
-    depends_on:
-      - postgres-customer-service-onboarding
-    networks:
-      - customer-service-onboarding
-
-  postgres-customer-service-onboarding:
-    image: postgres:14-alpine
-    container_name: postgres-customer-service-onboarding
-    ports:
-      - "5439:5432"
-    environment:
-      POSTGRES_DB: customer-service-onboarding
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - ./customer-service-onboarding/configs/database/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - customer-service-onboarding
-
   customer:
     build: 
       dockerfile: Dockerfile
@@ -47,7 +16,11 @@ services:
       - postgres-customer
     networks:
       - customer
-
+    deploy:
+      resources:
+        limits:
+          cpus: 0.50
+          memory: 512M
 
   postgres-customer:
     image: postgres:14-alpine
@@ -82,6 +55,11 @@ services:
     networks:
       - rabbitmq
       - order
+    deploy:
+      resources:
+        limits:
+          cpus: 0.50
+          memory: 512M
 
   postgres-order:
     image: postgres:14-alpine
@@ -126,6 +104,11 @@ services:
       - customer
       - product
       - general
+    deploy:
+      resources:
+        limits:
+          cpus: 0.50
+          memory: 512M
 
   notification:
     build: 
@@ -143,6 +126,11 @@ services:
       - rabbitmq
     networks:
       - rabbitmq
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
 
   order-receiver:
     build: 
@@ -161,6 +149,11 @@ services:
     networks:
       - rabbitmq
       - general
+    deploy:
+      resources:
+        limits:
+          cpus: 0.50
+          memory: 512M
 
   product:
     build: 
@@ -176,6 +169,11 @@ services:
       - postgres-product
     networks:
       - product
+    deploy:
+      resources:
+        limits:
+          cpus: 0.50
+          memory: 512M
 
   postgres-product:
     image: postgres:14-alpine
@@ -205,6 +203,11 @@ services:
       - postgres-user
     networks:
       - user
+    deploy:
+      resources:
+        limits:
+          cpus: 0.50
+          memory: 512M
 
   postgres-user:
     image: postgres:14-alpine
@@ -238,6 +241,12 @@ services:
       - rabbitmq
       - ticket-process
       - ticket-create
+      - redis
+    deploy:
+      resources:
+        limits:
+          cpus: 0.50
+          memory: 512M
 
   ticket-process:
     build: 
@@ -258,6 +267,12 @@ services:
     networks:
       - ticket-process
       - rabbitmq
+      - redis
+    deploy:
+      resources:
+        limits:
+          cpus: 0.50
+          memory: 512M
 
   postgres-ticket-process:
     image: postgres:14-alpine
@@ -272,10 +287,17 @@ services:
       - ./ticket-process/configs/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - ticket-process
+  
+  redis:
+    image: redis:7.0-alpine
+    container_name: redis
+    ports:
+      - 6379:6379
+    command: redis-server --save 60 1 --loglevel warning
+    networks:
+      - redis
 
 networks:
-  customer-service-onboarding:
-    driver: bridge
   customer:
     driver: bridge
   order:
@@ -289,6 +311,8 @@ networks:
   rabbitmq:
     driver: bridge
   ticket-process:
+    driver: bridge
+  redis:
     driver: bridge
   general:
     driver: bridge
