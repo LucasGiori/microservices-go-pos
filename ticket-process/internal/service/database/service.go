@@ -4,7 +4,6 @@ import (
 	"context"
 	"microservices/ticket-process/internal/repository"
 
-	// "github.com/google/uuid"
 	customErrors "gitlab.com/pos-alfa-microservices-go/core/errors"
 
 	"microservices/ticket-process/pkg/model"
