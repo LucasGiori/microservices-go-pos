@@ -36,3 +36,13 @@ func (h HandlerImpl) Create(c echo.Context) error {
 
 	return c.JSON(http.StatusAccepted, model)
 }
+
+func (h HandlerImpl) GetById(c echo.Context) error {
+	id := c.Param("id")
+	ticket, err := h.service.FindById(context.Background(), id)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, ticket)
+}

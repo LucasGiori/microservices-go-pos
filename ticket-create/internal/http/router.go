@@ -30,6 +30,7 @@ func (r *ServerRouter) Create() *echo.Echo {
 
 	ticket := e.Group("/ticket-create")
 	ticket.POST("", handler.Create, jwtMiddleware)
+	ticket.GET("/:id", handler.GetById, jwtMiddleware)
 
 	return e
 }
