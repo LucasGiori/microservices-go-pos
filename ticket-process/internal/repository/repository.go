@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
 	"gitlab.com/pos-alfa-microservices-go/core/database"
-	// "fmt"
 )
 
 type Repository interface {
