@@ -4,7 +4,8 @@ import (
 	"microservices/ticket-create/internal/container"
 	"microservices/ticket-create/internal/http"
 
-	"gitlab.com/pos-alfa-microservices-go/core/config"
+	"microservices/ticket-create/internal/config"
+
 	"gitlab.com/pos-alfa-microservices-go/core/http/server"
 	"gitlab.com/pos-alfa-microservices-go/core/log"
 )

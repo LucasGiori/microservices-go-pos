@@ -17,8 +17,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-type ServiceMessage interface {
+type Service interface {
 	Create(context.Context, *model.Ticket) (*model.Ticket, error)
+	FindById(ctx context.Context, ticketId string) (*model.Ticket, error)
 }
 
 type ServiceImpl struct {
@@ -27,7 +28,7 @@ type ServiceImpl struct {
 	tokenManager     auth.TokenManager
 }
 
-func NewServiceImpl(messagePublisher rabbitmq.MessagePublisher, ticketClient client.TicketClient, tokenManager auth.TokenManager) ServiceMessage {
+func NewServiceImpl(messagePublisher rabbitmq.MessagePublisher, ticketClient client.TicketClient, tokenManager auth.TokenManager) Service {
 	return &ServiceImpl{
 		messagePublisher: messagePublisher,
 		ticketClient:     ticketClient,
@@ -59,7 +60,7 @@ func (s ServiceImpl) FindById(ctx context.Context, ticketId string) (*model.Tick
 		return nil, err
 	}
 
-	return ticket
+	return ticket, nil
 }
 
 func (r ServiceImpl) validadeAndFindTicket(ctx context.Context, ticketId string) (*model.Ticket, error) {

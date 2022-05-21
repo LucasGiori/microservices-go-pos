@@ -17,7 +17,7 @@ import (
 type Container struct {
 	AppConfig *config.AppConfig
 
-	ServiceImplMessage message.ServiceMessage
+	ServiceImplMessage message.Service
 }
 
 func NewContainer(appConfig *config.AppConfig) *Container {
@@ -36,11 +36,11 @@ func (c *Container) Start() error {
 	httpClient := http.Client{Timeout: time.Duration(1) * time.Second}
 	restClient := coreClient.NewRestClient(httpClient, true)
 
-	TicketClient := client.NewHttpticketClient(restClient, c.AppConfig.Ticket.URL)
+	ticketClient := client.NewHttpticketClient(restClient, c.AppConfig.ticket.URL)
 	tokenManager := auth.NewJWTTokenManager(&coreConfig.AppConfig{JWT: c.AppConfig.JWT})
 
 	messagePublisher := rabbitmq.NewRabbitPublisher(rabbitClient)
-	c.ServiceImplMessage = message.NewServiceImpl(messagePublisher)
+	c.ServiceImplMessage = message.NewServiceImpl(messagePublisher, ticketClient, tokenManager)
 
 	return nil
 }

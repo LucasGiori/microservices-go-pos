@@ -11,13 +11,14 @@ import (
 
 type Handler interface {
 	Create(c echo.Context) error
+	GetById(c echo.Context) error
 }
 
 type HandlerImpl struct {
-	service service.ServiceMessage
+	service service.Service
 }
 
-func NewHandlerImpl(service service.ServiceMessage) Handler {
+func NewHandlerImpl(service service.Service) Handler {
 	return &HandlerImpl{
 		service: service,
 	}
