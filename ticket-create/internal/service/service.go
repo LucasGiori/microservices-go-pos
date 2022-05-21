@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 
+	"microservices/ticket-create/pkg/model"
+
+	"github.com/google/uuid"
 	"gitlab.com/pos-alfa-microservices-go/core/broker/rabbitmq"
 	coreLog "gitlab.com/pos-alfa-microservices-go/core/log"
-
-	"microservices/ticket-create/pkg/model"
 
 	"github.com/pkg/errors"
 )
@@ -27,6 +28,7 @@ func NewServiceImpl(messagePublisher rabbitmq.MessagePublisher) ServiceMessage {
 
 func (s ServiceImpl) Create(ctx context.Context, ticket *model.Ticket) (*model.Ticket, error) {
 
+	ticket.Id = uuid.New()
 	ticket.Status = model.OPEN
 	if err := s.messagePublisher.Publish("ticket-pending", ticket); err != nil {
 		return nil, errors.Wrap(err, "fail to publish ticket")
