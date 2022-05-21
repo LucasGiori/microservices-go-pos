@@ -6,11 +6,13 @@ import (
 	"crypto/tls"
 	"log"
 	"net/smtp"
+	"os"
 
 	"microservices/notification/pkg/model"
 
 	"gitlab.com/pos-alfa-microservices-go/core/broker/rabbitmq"
 	coreLog "gitlab.com/pos-alfa-microservices-go/core/log"
+	"github.com/joho/godotenv"
 )
 
 type SendNotificationProcessor interface {
@@ -30,6 +32,8 @@ func NewNotificationConsumerProcessor(queue string, client *rabbitmq.RabbitClien
 }
 
 func (n NotificationConsumerProcessor) StartConsume() error {
+	godotenv.Load(".env")
+
 	consumerNotification := rabbitmq.NewRabbitConsumer(n.client, "notification")
 	return consumerNotification.Consume(n.queue, func(body []byte) error {
 		bodyNotification := model.Notification{}
@@ -41,7 +45,7 @@ func (n NotificationConsumerProcessor) StartConsume() error {
 		bodyEmail := "Ticket status: " + bodyNotification.Status +  "\nDescrição: " + bodyNotification.Description
 
 		sendMail(
-			"trabalhounialfa@gmail.com", 
+			os.Getenv("EMAIL"), 
 			bodyNotification.Email, 
 			bodyEmail,
 		)
@@ -59,11 +63,13 @@ func checkErr(err error) {
 }
 
 func sendMail(from string, to string, body string) {
-	servername := "smtp.gmail.com:465"                
-	host := "smtp.gmail.com"                    
-	pass := "A123456*-*"
+	godotenv.Load(".env")
 
-	auth := smtp.PlainAuth("Valchan", from, pass, host) 
+	servername := os.Getenv("SERVER")                
+	host := os.Getenv("HOST")                   
+	pass := os.Getenv("PASSWORD")
+
+	auth := smtp.PlainAuth("Unialfa", from, pass, host) 
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,
 		ServerName:         host,
