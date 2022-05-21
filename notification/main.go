@@ -1,8 +1,8 @@
 package main
 
 import (
-	"microservices/customer-service-onboarding/internal/container"
-	"microservices/customer-service-onboarding/internal/http"
+	"microservices/notification/internal/container"
+	"microservices/notification/internal/http"
 
 	"gitlab.com/pos-alfa-microservices-go/core/config"
 	"gitlab.com/pos-alfa-microservices-go/core/http/server"
@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	log.Logger.Info("Starting customer-service-onboarding ...")
+	log.Logger.Info("Starting notification...")
 
 	conf, err := config.Start()
 	if err != nil {

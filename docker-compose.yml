@@ -96,6 +96,22 @@ services:
       - product
       - general
 
+  notification:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    ports:
+      - "8091:8080"
+    volumes:
+      - ./notification:/app
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+    networks:
+      - rabbitmq
+
   order-receiver:
     build: 
       dockerfile: Dockerfile
