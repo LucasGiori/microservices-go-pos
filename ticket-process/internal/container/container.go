@@ -56,7 +56,6 @@ func (c *Container) Start() error {
 	if err := ticketsProcessor.StartConsume(); err != nil {
 		return errors.Wrap(err, "fail on start consume for "+receivedQueueName)
 	}
-	//NewMessageOrderProcessor(receivedQueueName, rabbitClient, c.ProcessOrder)
 
 	return nil
 }
