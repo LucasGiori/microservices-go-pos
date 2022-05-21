@@ -6,6 +6,7 @@ go 1.17
 
 require (
 	github.com/google/uuid v1.3.0
+	github.com/joho/godotenv v1.4.0
 	github.com/labstack/echo/v4 v4.6.3
 	github.com/pkg/errors v0.8.1
 	github.com/spf13/viper v1.10.1
