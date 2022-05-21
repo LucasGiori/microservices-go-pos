@@ -1,13 +1,14 @@
 package model
 
-import (
-	"github.com/google/uuid"
+type TicketStatus string
+
+const (
+	OPEN TicketStatus = "ABERTO"
 )
 
 type Ticket struct {
-	Id          uuid.UUID
-	Idproduct   string
-	description string
-	email       string
-	status      string
+	Idproduct   string       `json:"id-product"`
+	Description string       `json:"description"`
+	Email       string       `json:"email"`
+	Status      TicketStatus `json:"status"`
 }

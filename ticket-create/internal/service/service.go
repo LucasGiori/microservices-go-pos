@@ -27,6 +27,7 @@ func NewServiceImpl(messagePublisher rabbitmq.MessagePublisher) ServiceMessage {
 
 func (s ServiceImpl) Create(ctx context.Context, ticket *model.Ticket) (*model.Ticket, error) {
 
+	ticket.Status = model.OPEN
 	if err := s.messagePublisher.Publish("ticket-pending", ticket); err != nil {
 		return nil, errors.Wrap(err, "fail to publish ticket")
 	}
