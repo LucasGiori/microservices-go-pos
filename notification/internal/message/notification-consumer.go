@@ -42,7 +42,7 @@ func (n NotificationConsumerProcessor) StartConsume() error {
 			return fmt.Errorf("fail to unmarshal notification %w", err)
 		}
 
-		bodyEmail := "Ticket status: " + bodyNotification.Status +  "\nDescrição: " + bodyNotification.Description
+		bodyEmail := "Ticket ID: " + bodyNotification.Id.String() + "\nTicket status: " + bodyNotification.Status +  "\nDescrição: " + bodyNotification.Description
 
 		sendMail(
 			os.Getenv("EMAIL"), 
