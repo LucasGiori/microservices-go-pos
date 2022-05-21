@@ -101,6 +101,7 @@ services:
       dockerfile: Dockerfile
       context: .
       target: dev
+    container_name: notification
     ports:
       - "8091:8080"
     volumes:
