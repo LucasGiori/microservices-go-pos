@@ -2,10 +2,13 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"microservices/ticket-create/internal/service"
 	"microservices/ticket-create/pkg/model"
 	"net/http"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 )
 
@@ -40,6 +43,26 @@ func (h HandlerImpl) Create(c echo.Context) error {
 
 func (h HandlerImpl) GetById(c echo.Context) error {
 	id := c.Param("id")
+
+	redisDatabase := redis.NewClient(&redis.Options{
+		Addr:     "redis:6379",
+		Password: "",
+		DB:       0,
+	})
+
+	ticketCached, err := redisDatabase.Get(context.Background(), id).Result()
+
+	if err == nil {
+		ticketCached := []byte(ticketCached)
+
+		ticketStruct := model.Ticket{}
+
+		if err := json.Unmarshal(ticketCached, &ticketStruct); err != nil {
+			return fmt.Errorf("fail to unmarshal ticket %w", err)
+		}
+		return c.JSON(http.StatusOK, ticketStruct)
+	}
+
 	ticket, err := h.service.FindById(context.Background(), id)
 	if err != nil {
 		return err

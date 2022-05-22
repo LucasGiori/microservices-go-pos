@@ -2,11 +2,16 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	service "microservices/ticket-process/internal/service/database"
 	message "microservices/ticket-process/internal/service/message"
 	"microservices/ticket-process/pkg/model"
 	"net/http"
+	"time"
 
+	"gitlab.com/pos-alfa-microservices-go/core/log"
+
+	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 )
 
@@ -46,11 +51,29 @@ func (h HandlerImpl) Create(c echo.Context) error {
 
 func (h HandlerImpl) GetById(c echo.Context) error {
 	id := c.Param("id")
+
 	ticket, err := h.service.FindById(context.Background(), id)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, &model.Response{
 			Message: "Ticket not found",
 		})
+	}
+
+	ticketJsonString, err := json.Marshal(ticket)
+	if err != nil {
+		log.Logger.Fatal("Erro ao realizar json Marshal.", err)
+		return c.JSON(http.StatusOK, ticket)
+	}
+
+	redisDatabase := redis.NewClient(&redis.Options{
+		Addr:     "redis:6379",
+		Password: "",
+		DB:       0,
+	})
+
+	errTicketCached := redisDatabase.Set(context.Background(), id, string(ticketJsonString), 5*time.Minute).Err()
+	if errTicketCached != nil {
+		panic(err)
 	}
 
 	return c.JSON(http.StatusOK, ticket)
