@@ -239,8 +239,8 @@ services:
       - rabbitmq
     networks:
       - rabbitmq
-      - ticket-process
       - ticket-create
+      - ticket-process
       - redis
     deploy:
       resources:
