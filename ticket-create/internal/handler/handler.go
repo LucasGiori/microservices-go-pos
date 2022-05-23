@@ -52,7 +52,7 @@ func (h HandlerImpl) GetById(c echo.Context) error {
 
 	ticketCached, err := redisDatabase.Get(context.Background(), id).Result()
 
-	if err == nil {
+	if err == nil && err != redis.Nil {
 		ticketCached := []byte(ticketCached)
 
 		ticketStruct := model.Ticket{}
@@ -60,12 +60,16 @@ func (h HandlerImpl) GetById(c echo.Context) error {
 		if err := json.Unmarshal(ticketCached, &ticketStruct); err != nil {
 			return fmt.Errorf("fail to unmarshal ticket %w", err)
 		}
+
 		return c.JSON(http.StatusOK, ticketStruct)
 	}
 
 	ticket, err := h.service.FindById(context.Background(), id)
-	if err != nil {
-		return err
+
+	if err != nil || ticket.Status == "" {
+		return c.JSON(http.StatusBadRequest, &model.Response{
+			Message: "Ticket not found",
+		})
 	}
 
 	return c.JSON(http.StatusOK, ticket)

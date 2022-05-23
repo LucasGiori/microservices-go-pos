@@ -62,7 +62,7 @@ func (h HandlerImpl) GetById(c echo.Context) error {
 	ticketJsonString, err := json.Marshal(ticket)
 	if err != nil {
 		log.Logger.Fatal("Erro ao realizar json Marshal.", err)
-		return c.JSON(http.StatusOK, ticket)
+		return c.JSON(http.StatusBadRequest, ticket)
 	}
 
 	redisDatabase := redis.NewClient(&redis.Options{
